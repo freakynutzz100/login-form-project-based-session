@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: monospace;
+            max-width: 300px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #000;
+        }
+        h2 {
+            margin-top: 0;
+            border-bottom: 1px solid #000;
+            padding-bottom: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+            border: 1px solid #000;
+            background: #fff;
+            color: #000;
+            font-family: monospace;
+        }
+        button {
+            width: 100%;
+            padding: 7px;
+            border: 1px solid #000;
+            background: #000;
+            color: #fff;
+            font-family: monospace;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #444;
+        }
+        .signup-link-container {
+            margin-top: 15px;
+            text-align: center;
+        }
+        .signup-link {
+            color: blue;
+            text-decoration: underline;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Login</h2>
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+    <div class="signup-link-container">
+        <a href="register.html" class="signup-link">Dont have a account? Sign Up</a>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('userEmail', data.email);
+                    localStorage.setItem('username', data.username);
+                    window.location.href = 'welcome.html';
+                } else {
+                    if (data.error === 'user does not exist') {
+                        alert('user does not exist');
+                    } else {
+                        alert(data.error || 'Login failed');
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error connecting to the server');
+            }
+        });
+    </script>
+</body>
+</html>
